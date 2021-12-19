@@ -19,8 +19,8 @@ public class Client {
         this.txaLog = txaLog;
     }
 
-    public static void main(String[] args) {
-
+    public Socket getClient() {
+        return client;
     }
 
     public void connectServer() {
@@ -35,10 +35,14 @@ public class Client {
     }
 
     public void sendFile(String sourceFilePath, String destinationDir) {
+        DataOutputStream dos = null;
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
 
         try {
+            dos = new DataOutputStream(client.getOutputStream());
+            dos.writeUTF("Hello from " + client.getLocalSocketAddress());
+
             FileInfo fileInfo = getFileInfo(sourceFilePath, destinationDir);
 
             oos = new ObjectOutputStream(client.getOutputStream());
@@ -61,6 +65,10 @@ public class Client {
 
                 if (ois != null) {
                     ois.close();
+                }
+
+                if (dos != null) {
+                    dos.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
