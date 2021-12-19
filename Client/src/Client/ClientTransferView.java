@@ -47,6 +47,18 @@ public class ClientTransferView extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
+    public void chooseFile() {
+        final JFileChooser fc = new JFileChooser();
+        fc.showOpenDialog(this);
+        try {
+            if (fc.getSelectedFile() != null) {
+                txfFilePath.setText(fc.getSelectedFile().getPath());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public JTextField getTxfHost() {
         return txfHost;
     }
