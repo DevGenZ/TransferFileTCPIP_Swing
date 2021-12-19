@@ -29,12 +29,16 @@ public class Server extends Thread {
     public void run() {
         while (true) {
             Socket server = null;
+            DataInputStream dis = null;
             ObjectInputStream ois = null;
             ObjectOutputStream oos = null;
 
             try {
                 server = serverSocket.accept();
                 System.out.println("Connected to - " + server.getRemoteSocketAddress());
+
+                dis = new DataInputStream(server.getInputStream());
+                System.out.println(dis.readUTF());
 
                 ois = new ObjectInputStream(server.getInputStream());
                 FileInfo fileInfo = (FileInfo) ois.readObject();
@@ -60,6 +64,10 @@ public class Server extends Thread {
                         oos.close();
                     }
 
+                    if (dis != null) {
+                        dis.close();
+                    }
+
                     if (server != null) {
                         server.close();
                     }
@@ -74,15 +82,17 @@ public class Server extends Thread {
         BufferedOutputStream bos = null;
         try {
             if (fileInfo != null) {
-                File fileReceive = new File("C:\\Users\\is2vi\\OneDrive\\Desktop\\" + fileInfo.getFileName());
+                File fileReceive = new File(fileInfo.getDestinationDirectory() + fileInfo.getFileName());
                 bos = new BufferedOutputStream(new FileOutputStream(fileReceive));
                 bos.write(fileInfo.getDataBytes());
                 bos.flush();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         } finally {
             try {
                 if (bos != null) {
